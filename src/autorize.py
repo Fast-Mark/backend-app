@@ -7,16 +7,17 @@ from fastapi import Depends, HTTPException, status
 import jwt
 from jose import JWTError
 
-from src.users_db import get_user, not_real_db_users
-
+# from src.users_db import get_user, not_real_db_users
+from src.bd import UsersDB
 from src.modules import TokenData, User
+
+user_db = UsersDB()
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
@@ -28,8 +29,8 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
+def authenticate_user(username: str, password: str):
+    user = user_db.get_user_password(username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -60,7 +61,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(not_real_db_users, username=token_data.username)
+    # TODO сделать модель юзера в методе класса бд
+    user = user_db.get_user(token_data.username)
     if user is None:
         raise credentials_exception
     return user

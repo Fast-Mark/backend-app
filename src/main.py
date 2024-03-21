@@ -11,10 +11,6 @@ from src.tableManager import save_uploaded_file
 from src.autorize import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_active_user
 
 
-# from users_db import *
-# from modules import ElementsList, User
-
-
 
 app = FastAPI()
 origins = ["*"]
@@ -59,7 +55,7 @@ async def verify_token(current_user: Annotated[User, Depends(get_current_active_
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ) -> Token:
-    user = authenticate_user(not_real_db_users, form_data.username, form_data.password)
+    user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=401,
