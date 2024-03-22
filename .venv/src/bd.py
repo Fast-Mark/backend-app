@@ -1,3 +1,4 @@
+import logging
 import sqlite3
 
 from src.modules import UserInDB
@@ -17,23 +18,18 @@ class UsersDB():
         self.db.commit()
 
     def create_user(this, user_name, user_password, user_emeil):
+        logger = logging.getLogger("uvicorn.error")
+        logger.info("created")
         if (user_name == None) or (user_password == None):
             return False
         
         this.sql.execute(f"SELECT name FROM users WHERE name = '{user_name}'")
         if this.sql.fetchone() is None:
-            this.sql.execute("INSERT INTO users VALUES (?,?,?,?)", (user_name, user_password, user_emeil, True))
+            this.sql.execute("INSERT INTO users VALUES (?,?,?,?)", (user_name, user_password, user_emeil, False))
             this.db.commit()
             # добавлен новый пользователь
         else:
             return Exception("user with this name already exists")
-        
-    # def get_user_password(this, user_name):
-    #     if (user_name == None):
-    #         return False
-        
-    #     this.sql.execute("SELECT * FROM users WHERE name = ?", (user_name,) )
-    #     return  this.sql.fetchone()
 
     def get_user(this, user_name):
         if (user_name == None):
@@ -41,7 +37,7 @@ class UsersDB():
 
         this.sql.execute("SELECT * FROM users WHERE name = ?", (user_name,) )
         db_user = this.sql.fetchone()
-        user = UserInDB(hashed_password=db_user[1])
+        user = UserInDB(username=db_user[0], email=db_user[2], disabled=db_user[3], hashed_password=db_user[1])
         return user
 
 
@@ -56,9 +52,9 @@ class UsersDB():
         this.sql.execute("DROP TABLE IF EXISTS users")
 
 
-all_users = UsersDB()
+# all_users = UsersDB()
 
-print(all_users.create_user('Amir', 'ggggggs', 'amralt@gmail.com'))
+# print(all_users.create_user('Amir', 'ggggggs', 'amralt@gmail.com'))
 # print(all_users.get_user("Amir"))
 
 # print(all_users.getAllUsers())

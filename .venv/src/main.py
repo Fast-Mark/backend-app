@@ -5,10 +5,10 @@ from fastapi import Depends, FastAPI, HTTPException, UploadFile
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.modules import Token, User
+from src.modules import Token, User, UserInDB
 from src.users_db import not_real_db_users
 from src.tableManager import save_uploaded_file
-from src.autorize import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_active_user
+from src.autorize import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, create_new_user, get_current_active_user
 
 
 
@@ -44,8 +44,13 @@ async def read_start_page():
 
 
 @app.get('/create-user')
-async def create_user():
-    pass
+async def create_user(username: str, email: str, password: str):
+    create_new_user(username, email, password)
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": username}, expires_delta=access_token_expires
+    )
+    return Token(access_token=access_token, token_type="bearer")
 
 @app.post("/verify-user")
 async def verify_token(current_user: Annotated[User, Depends(get_current_active_user)]):

@@ -74,3 +74,10 @@ async def get_current_active_user(
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
+
+def create_new_user(user_name, user_password, user_emeil):
+    hashed_password = get_password_hash(user_password)
+    try:
+        user_db.create_user(user_name, hashed_password, user_emeil)
+    except:
+        return HTTPException(status_code=400, detail="user alruedy exists")
