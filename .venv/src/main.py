@@ -45,7 +45,7 @@ async def read_start_page():
 
 @app.get('/create-user')
 async def create_user(username: str, email: str, password: str):
-    create_new_user(username, email, password)
+    create_new_user(username, password, email)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": username}, expires_delta=access_token_expires
