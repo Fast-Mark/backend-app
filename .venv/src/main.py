@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.modules import Token, User, UserInDB
 from src.users_db import not_real_db_users
-from src.tableManager import save_uploaded_file
+from src.save_table import save_uploaded_file
 from src.autorize import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, create_new_user, get_current_active_user
 
 
@@ -31,10 +31,6 @@ async def read_start_page():
     pass
 
 @app.get('/workspace')
-async def read_start_page():
-    pass
-
-@app.get('/result')
 async def read_start_page():
     pass
 
@@ -79,11 +75,12 @@ async def login_for_access_token(
 # пока что можно просто создаватоь папку пользователя и добавлять туда
 
 @app.post('/file/upload-table')
-async def upload_table(user_name: str, file: UploadFile):
-    result = await save_uploaded_file(user_name, file)
-    return result
+async def upload_table(current_user: Annotated[User, Depends(get_current_active_user)], file: UploadFile, project_name: str):
+    await save_uploaded_file(current_user.username, project_name, file)
+    return 
 
+# TODO: в будущем нужно будет сохранять названия существующих проектов пользователя
 
-@app.get("/posts")
-async def give_posts():
-    return "hello world!"
+@app.get('create-resilt')
+async def create_result():
+    pass

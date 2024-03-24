@@ -11,3 +11,7 @@ pydantic==2.6.4
 PyJWT==2.8.0
 
 python-multipart
+
+pillow==10.2.0
+
+openpyxl==3.1.2

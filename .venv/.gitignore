@@ -5,3 +5,5 @@ Lib/site-packeges/
 src/__pycache__
 
 __pycache__/
+
+user_folders/
