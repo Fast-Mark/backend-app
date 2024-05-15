@@ -4,7 +4,7 @@ from src.modules import UserInDB
 
 
 not_real_db_users = {
-    "johndoe": {
+    "johndoe@example.com": {
         "username": "johndoe",
         "full_name": "John Doe",
         "email": "johndoe@example.com",
@@ -13,7 +13,7 @@ not_real_db_users = {
     }
 }
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
+def get_user(db, email: str):
+    if email in db:
+        user_dict = db[email]
         return UserInDB(**user_dict)

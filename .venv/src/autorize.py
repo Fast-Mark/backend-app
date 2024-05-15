@@ -28,8 +28,8 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def authenticate_user(username: str, password: str):
-    user = user_db.get_user(username)
+def authenticate_user(email: str, password: str):
+    user = user_db.get_user(email)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -75,9 +75,11 @@ async def get_current_active_user(
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
-def create_new_user(user_name, user_password, user_emeil):
+def create_new_user(user_password, user_email):
     hashed_password = get_password_hash(user_password)
+    user_name = ""
     try:
-        user_db.create_user(user_name, hashed_password, user_emeil)
+        user_name = user_db.create_user(hashed_password, user_email)
     except:
         return HTTPException(status_code=400, detail="user alruedy exists")
+    return user_name

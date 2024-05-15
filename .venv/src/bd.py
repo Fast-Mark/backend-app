@@ -17,25 +17,26 @@ class UsersDB():
         )""")
         self.db.commit()
 
-    def create_user(this, user_name, user_password, user_emeil):
+    def create_user(this, user_password, user_email):
         logger = logging.getLogger("uvicorn.error")
         logger.info("created")
-        if (user_name == None) or (user_password == None):
+        if (user_email == None) or (user_password == None):
             return False
-        
-        this.sql.execute(f"SELECT name FROM users WHERE name = '{user_name}'")
+        # TODO: user_name нужно будет генерировать автоматически, по нему будут называться папки 
+        this.sql.execute(f"SELECT name FROM users WHERE email = '{user_email}'")
         if this.sql.fetchone() is None:
-            this.sql.execute("INSERT INTO users VALUES (?,?,?,?)", (user_name, user_password, user_emeil, False))
+            this.sql.execute("INSERT INTO users VALUES (?,?,?,?)", ("user_name", user_password, user_email, False))
             this.db.commit()
             # добавлен новый пользователь
         else:
             return Exception("user with this name already exists")
+        return "user_name"
 
-    def get_user(this, user_name):
-        if (user_name == None):
+    def get_user(this, user_email):
+        if (user_email == None):
             return None
 
-        this.sql.execute("SELECT * FROM users WHERE name = ?", (user_name,) )
+        this.sql.execute("SELECT * FROM users WHERE email = ?", (user_email,) )
         db_user = this.sql.fetchone()
         user = UserInDB(username=db_user[0], email=db_user[2], disabled=db_user[3], hashed_password=db_user[1])
         return user
